@@ -1,0 +1,43 @@
+---
+- name: configuring application
+  hosts: all
+  tasks:
+    - name:
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: tomcat9,b: present,c: no}
+        - {a: tomcat9-admin,b: present,c: no}
+
+    - name: copy user.xml
+      copy:
+        src: tomcat-users.xml
+        dest: /etc/tomcat9
+
+    - name: replace port
+      replace:
+        regexp: 7070
+        replace: 6060
+        path: /etc/tomcat9/server.xml
+
+    - name: restart service
+      service:
+        name: tomcat9
+        state: restarted
+
+    - name: pause 30 sec
+      pause:
+        seconds: 30
+
+    - name: check tomcat url
+      uri:
+        url: "{{item}}"
+        status_code: 200
+      with_items:
+        - http://172.31.3.92:6060
+        - http://172.31.9.15:6060
+
+
+...
