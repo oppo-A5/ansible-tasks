@@ -1,0 +1,34 @@
+---
+- name: tomcat installtion on remote server
+  hosts: all
+  become: yes
+  tasks:
+    - name: tomcat9 install
+      apt:
+        name: tomcat9
+        state: present
+        update_cache: yes
+
+    - name: restart service
+      service:
+        name: tomcat9
+        state: restarted
+
+    - name: copy into user.xml
+      copy:
+        src: tomcat-users.xml
+        dest: /etc/tomcat9
+
+    - name: repalce port
+      replace:
+        regexp: 9090
+        replace: 7070
+        path: /etc/tomcat9/server.xml
+
+    - name: restart tomcat
+      service:
+        name: tomcat9
+        state: restarted
+
+
+...

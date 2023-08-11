@@ -1,0 +1,32 @@
+---
+- name: install apache2 on host
+  hosts: all
+  become: yes
+  tasks:
+    - name: apache2 install
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: restarting service
+      service:
+        name: apache2
+        state: restarted
+
+    - name: copy content into index file
+      copy:
+        content: "wellcome to nagpur"
+        dest: /var/www/html/index.html
+
+    - name: check apache2 on server1
+      uri:
+        url: http://172.31.3.92
+        status_code: 200
+
+    - name: check apache2 on server2
+      uri:
+        url: http://172.31.9.15
+        status_code: 200
+
+...

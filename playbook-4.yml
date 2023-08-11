@@ -1,0 +1,19 @@
+---
+- name: copy file one server to another
+  hosts: 172.31.3.92
+  become: yes
+  tasks:
+    - name: fetch server-1 to controller
+      fetch:
+        src: devops.txt
+        dest: /tmp/dev
+
+- name: copy file controller to server-2
+  hosts: 172.31.9.15
+  become: yes
+  tasks:
+    - name: copy file controller to server-2
+      copy:
+        src: /tmp/dev/172.31.3.92/devops.txt
+        dest: /tmp
+...

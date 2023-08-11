@@ -1,0 +1,16 @@
+---
+- name: creation of user on remote server
+  hosts: all
+  become: yes
+  tasks:
+    - name: user creation
+      user:
+        name: jack
+        uid: 1212
+        password: jack
+        comment: "new  user"
+        home: /tmp/jack
+        shell: /bin/bash
+
+
+...

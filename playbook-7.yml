@@ -1,0 +1,16 @@
+---
+- name: unisntall package by scope var
+  hosts: all
+  vars:
+    a: tomcat9
+    b: absent
+    c: no
+
+  tasks:
+    - name: remove package
+      apt:
+        name: "{{a}}" 
+        state: "{{b}}"
+        update_cache: "{{c}}"
+
+...
