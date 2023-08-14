@@ -1,0 +1,25 @@
+---
+- name: implementing tags
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: install git
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+      tags: git_installation
+
+    - name: create user
+      user:
+        name: joy
+        password: joy
+        uid: 1414
+      tags: user_creation
+
+    - name: copy file 
+      copy:
+        src: /etc/passwd
+        dest: /tmp
+
+...

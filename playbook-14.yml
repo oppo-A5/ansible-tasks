@@ -1,0 +1,45 @@
+---
+- name: installing jenkin and required s/f
+  hosts: jenkins
+  tasks:
+    - name: install java git maven
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: openjdk-11-jdk,b: present,c: yes}
+        - {a: git,b: present,c: no}
+        - {a: maven,b: present,c: no}
+
+    - name: install jenkin
+      get_url:
+        url: https://get.jenkins.io/war-stable/2.401.3/jenkins.war
+        dest: /home/ubuntu
+
+- name: installing tomcat in managed nodes
+  hosts: servers
+  tasks:
+    - name: install tomcat9 and tomcat9-admin
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: tomcat9,b: present,c: yes}
+        - {a: tomcat9-admin,b: present,c: no}
+
+    - name: copy user.xml file
+      copy:
+        src: tomcat-users.xml
+        dest: /etc/tomcat9
+      notify: tomcat restart
+        
+
+  handlers:
+    - name: tomcat restart
+      service:
+        name: tomcat9
+        state: restarted
+
+...
