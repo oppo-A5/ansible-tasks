@@ -1,0 +1,8 @@
+---
+- name: apache2 installation
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+
+...

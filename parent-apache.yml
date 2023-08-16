@@ -1,0 +1,13 @@
+---
+- name: run all child playbook
+  hosts: all
+  tasks:
+    - name: run child playbook
+      include: "{{item}}"
+      with_items:
+        - apache-install.yml
+        - editindex.yml
+        - restart.yml
+        - check-response.yml
+
+...

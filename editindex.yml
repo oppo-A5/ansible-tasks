@@ -1,0 +1,7 @@
+---
+- name: copy index file
+  copy:
+    content: "fuck you"
+    dest: /var/www/html/index.html
+
+...
