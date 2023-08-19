@@ -1,0 +1,19 @@
+---
+- name: install maven on all server
+  hosts: all
+  tasks:
+    - name: install maven on ubuntu
+      apt:
+        name: maven
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install maven on redhat
+      yum:
+        name: maven
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "RedHat"
+
+...

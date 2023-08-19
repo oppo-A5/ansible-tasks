@@ -1,0 +1,46 @@
+---
+- name: install apache2 and httpd software
+  hosts: all
+  tasks:
+    - name: install apache2 on ubuntu
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install httpd on redhat
+      yum:
+        name: httpd
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "RedHat"
+
+    - name: copy content into index.html
+      copy:
+        content: "wellcome to nagpur"
+        dest: /var/www/html/index.html
+
+    - name: restrt apache2
+      service:
+        name: apache2
+        state: restarted
+      when: ansible_distribution == "Ubuntu"
+
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+      when: ansible_distribution == "RedHat"
+
+    - name: check url on managed nodes
+      uri:
+        url: "{{item}}"
+        status_code: 200
+      with_items:
+        - http://172.31.3.92
+        - http://172.31.9.15
+        - http://172.31.1.205
+
+
+...
