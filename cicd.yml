@@ -1,0 +1,79 @@
+---
+- name: install requried software on dev-server
+  hosts: devserver
+  tasks:
+    - name: install s/f on dev
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: openjdk-11-jdk,b: present,c: yes}
+        - {a: git, b: present,c: no}
+        - {a: maven,b: present,c: no}
+
+- name: install required software on qaserver
+  hosts: qaserver
+  tasks:
+    - name: install s/f on qa
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: openjdk-11-jdk,b: present,c: yes}
+        - {a: git, b: present,c: no}
+        - {a: tomcat9,b: present,c: no}
+        - {a: tomcat9-admin,b: present,c: no}
+- name: install requried software on prodserver
+  hosts: prodserver
+  tasks:
+    - name: install s/f on prod
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: tomcat9,b: present,c: yes}
+        - {a: tomcat9-admin,b: present,c: no}
+
+- name: continues download and contiunes build
+  hosts: devserver
+  tasks:
+    - name: download dev code from github
+      git:
+        repo: https://github.com/intelliqittrainings/maven.git
+        dest: dev-git
+
+    - name: create artifact from above code
+      shell: cd dev-git;mvn package
+
+    - name: fetch the artifact from devserver
+      fetch:
+        src: dev-git/webapp/target/webapp.war
+        dest: /tmp
+
+- name: continues deployment and testing
+  hosts: qaserver
+  tasks:
+    - name: deploy artifact on tomcat server
+      copy:
+        src: /tmp/172.31.5.69/dev-git/webapp/target/webapp.war
+        dest: /var/lib/tomcat9/webapps/testapp.war
+    - name: download selenium script
+      git:
+        repo: https://github.com/intelliqittrainings/FunctionalTesting.git
+        dest: test-git
+    - name: execute the selenium script
+      shell: java -jar test-git/testing.jar
+
+- name: continues delivery
+  hosts: prodserver
+  tasks:
+    - name: deploy artifcat on tomcat prod server
+      copy:
+        src: /tmp/172.31.5.69/dev-git/webapp/target/webapp.war
+        dest: /var/lib/tomcat9/webapps/prodapp.war
+
+
+...
